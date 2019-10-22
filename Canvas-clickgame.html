@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<h1>Martin's first javascript canvas</h1>
+<button id="circle", onclick="circle()">Press the button to generate a circle</button>
+<button id="clear", onclick="clearcanvas()">Press the button to clear the screen</button>
+<p id="mouse_position">Mouse position</p>
+<canvas id="playground" width="1000" height="500" onclick="showCoords(event)"></canvas>
+<p id = "score">Your score: 0</p>
+<script>
 
+var points = 0;
+var circles = [];
+var radius = 20;
+var c = document.getElementById("playground");
+var ctx = c.getContext("2d");
+ctx.rect(0, 0, 1000, 500);
+ctx.fillStyle = "#800080";
+ctx.fill();
+
+//ctx.beginPath();
+//var grad = ctx.createLinearGradient(100, 100, 200, 200);
+//grad.addColorStop(0, "#1E90FF");
+//grad.addColorStop(1, "#008000");
+//ctx.lineWidth = 10;
+//ctx.moveTo(100,100);
+//ctx.lineTo(200,200);
+//ctx.strokeStyle = grad;
+//ctx.stroke();
+//ctx.closePath();
+
+function showCoords(event) {
+    var x = event.clientX;
+    var y = event.clientY;
+    document.getElementById("mouse_position").innerHTML = "Mouse position: x:" + x + ", y:" +  y; 
+    for (c = 0; c < circles.length/2; c++) {
+        var circle_index_x = c*2;
+        var circle_index_y = c*2+1;
+        var victory = clickcollide(circles[circle_index_x],circles[circle_index_y]); 
+        if (victory == 1) {
+            //Break the loop, remove circle from circles
+            circles.splice(circle_index_x, 2);
+            redraw();
+            return; } } }
+
+function clickcollide(x,y) {
+    var mouse_x = event.clientX - 8;
+    var mouse_y = event.clientY - 152;
+    var diff_x = x - mouse_x;
+    var diff_y = y - mouse_y;
+    var diff = Math.sqrt(diff_x**2 + diff_y**2);
+    if (diff < radius) {
+        points++;
+        console.log(points)
+        document.getElementById("score").innerHTML = "Your score: " + points;
+        return 1; }
+    else {
+        return 0; }
+     }
+
+function random_color() {
+    var color = Math.floor(Math.random() * 16777216).toString(16);
+    return '#000000'.slice(0, -color.length) + color; }
+
+function redraw() {
+    clearcanvas();
+    for (c = 0; c < circles.length/2; c++) {
+        var circle_index_x = c*2;
+        var circle_index_y = c*2+1;
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        var x = circles[circle_index_x];
+        var y = circles[circle_index_y];
+        ctx.arc(x,y,radius,0,2*Math.PI);
+        ctx.strokeStyle = random_color();
+        ctx.stroke(); 
+        }
+    }
+    
+function circle() {
+    ctx.beginPath();
+    ctx.lineWidth = 5;
+    var x = Math.floor(Math.random()*1000+0);
+    var y = Math.floor(Math.random()*500+0);
+    ctx.arc(x,y,radius,0,2*Math.PI);
+    ctx.strokeStyle = random_color();
+    ctx.stroke(); 
+    circles.push(x,y); }
+
+function clearcanvas() {
+    ctx.clearRect(0,0,1000,500)
+    ctx.rect(0, 0, 1000, 500);
+    ctx.fillStyle = "#800080";
+    ctx.fill();
+    }
+
+
+</script>
+</body>
